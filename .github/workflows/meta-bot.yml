@@ -38,9 +38,3 @@ jobs:
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
         run: python scrape.py
 
-      - name: Upload last_meta.json
-        uses: actions/upload-artifact@v3
-        with:
-          name: last-meta
-          path: last_meta.json
-
