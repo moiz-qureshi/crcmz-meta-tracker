@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 8,20 * * *'  # 8 AM and 8 PM UTC
   workflow_dispatch:
+  push:
+    branches: [ main ]
+
 
 jobs:
   run-bot:
@@ -36,8 +39,7 @@ jobs:
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
         run: python scrape.py
 
-      - name: Save updated meta
-        if: always()
+      - name: Upload last_meta.json
         uses: actions/upload-artifact@v3
         with:
           name: last-meta
