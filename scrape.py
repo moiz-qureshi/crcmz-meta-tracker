@@ -21,19 +21,22 @@ MODES = {
 
 RANGES = {
     "Long Range": None,  # Default tab
-    "Close Range": "a.menu-item:has-text('Close range')"
+    "Close Range": "a.menu-item:has-text('Close range')",
+    "Sniper": "a.menu-item:has-text('Sniper')"
 }
 
 TITLE_EMOJIS = {
     ("Resurgence", "Long Range"): "🎯",
     ("Resurgence", "Close Range"): "🔫",
+    ("Resurgence", "Sniper"): "🎯",
     ("Verdansk", "Long Range"): "🏹",
-    ("Verdansk", "Close Range"): "🪖"
+    ("Verdansk", "Close Range"): "🪖",
+    ("Verdansk", "Sniper"): "🏹"
 }
 
 EMBED_COLORS = {
     "Resurgence": 0x3498db,  # Blue
-    "Verdansk": 0x2ecc71,    # Green
+    "Verdansk": 0x2ecc71     # Green
 }
 
 def scrape_top_gun(mode: str, url: str, range_label: str, selector: str):
@@ -84,8 +87,8 @@ def scrape_top_gun(mode: str, url: str, range_label: str, selector: str):
                 formatted_lines.append(f"• {name}")
                 i += 1
 
-        img_el = gun.query_selector("img")
-        gun_image = img_el.get_attribute("src") if img_el else None
+        image_container = gun.query_selector("div.weapon-image-rank-container img")
+        gun_image = image_container.get_attribute("src") if image_container else None
 
         browser.close()
         return {
