@@ -3,14 +3,19 @@ import os
 import json
 import asyncio
 import re
+from io import BytesIO
+import requests
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
+from PIL import Image
+import pillow_avif
 import discord
 
 # === Load Environment ===
 load_dotenv()
 DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("DISCORD_CHANNEL_ID"))
+IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
 META_STORE = "last_meta.json"
 
 # === Config ===
@@ -38,6 +43,34 @@ EMBED_COLORS = {
     "Resurgence": 0x3498db,  # Blue
     "Verdansk": 0x2ecc71     # Green
 }
+
+def convert_avif_to_png(image_bytes):
+    with Image.open(BytesIO(image_bytes)) as img:
+        output = BytesIO()
+        img.convert("RGB").save(output, format="PNG")
+        output.seek(0)
+        return output
+
+def upload_image_to_imgur(image_url):
+    try:
+        response = requests.get(image_url)
+        response.raise_for_status()
+        image_bytes = response.content
+
+        # Convert AVIF if necessary
+        if image_url.endswith(".avif") or response.headers.get("Content-Type") == "image/avif":
+            image_data = convert_avif_to_png(image_bytes)
+        else:
+            image_data = BytesIO(image_bytes)
+
+        headers = {'Authorization': f'Client-ID {IMGUR_CLIENT_ID}'}
+        files = {'image': image_data}
+        res = requests.post("https://api.imgur.com/3/image", headers=headers, files=files)
+        res.raise_for_status()
+        return res.json()['data']['link']
+    except Exception as e:
+        print(f"⚠️ Imgur upload failed: {e}")
+        return None
 
 def scrape_top_gun(mode: str, url: str, range_label: str, selector: str):
     with sync_playwright() as p:
@@ -89,6 +122,7 @@ def scrape_top_gun(mode: str, url: str, range_label: str, selector: str):
 
         image_container = gun.query_selector("div.weapon-image-rank-container img")
         gun_image = image_container.get_attribute("src") if image_container else None
+        gun_image = upload_image_to_imgur(gun_image) if gun_image else None
 
         browser.close()
         return {
@@ -102,13 +136,8 @@ def scrape_top_gun(mode: str, url: str, range_label: str, selector: str):
 
 def load_last_meta():
     if os.path.exists(META_STORE):
-        try:
-            with open(META_STORE, "r") as f:
-                content = f.read().strip()
-                if content:
-                    return json.loads(content)
-        except json.JSONDecodeError:
-            print("⚠️ Warning: last_meta.json is corrupted or empty. Starting fresh.")
+        with open(META_STORE, "r") as f:
+            return json.load(f)
     return {}
 
 def save_last_meta(data):
