@@ -136,8 +136,13 @@ def scrape_top_gun(mode: str, url: str, range_label: str, selector: str):
 
 def load_last_meta():
     if os.path.exists(META_STORE):
-        with open(META_STORE, "r") as f:
-            return json.load(f)
+        try:
+            with open(META_STORE, "r") as f:
+                content = f.read().strip()
+                if content:
+                    return json.loads(content)
+        except Exception as e:
+            print(f"⚠️ Could not load last_meta.json: {e}")
     return {}
 
 def save_last_meta(data):
