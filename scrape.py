@@ -187,7 +187,8 @@ async def send_all_metas(metas):
             async for msg in channel.history(limit=50):
                 if msg.author == client.user and msg.embeds:
                     embed = msg.embeds[0]
-                    if embed.title and embed.title.strip() == expected_title.strip():
+                    if embed.title and f"{meta['mode']} {meta['range']} Meta Loadout" in embed.title:
+
                         try:
                             await msg.delete()
                             print(f"🧹 Deleted old message for {key}")
