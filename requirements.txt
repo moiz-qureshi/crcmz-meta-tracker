@@ -1,4 +1,6 @@
-requests>=2.31.0
-discord.py>=2.3.2
-python-dotenv>=1.0.1
-playwright>=1.44.0
+discord.py
+python-dotenv
+playwright
+Pillow
+pillow-avif-plugin
+requests
