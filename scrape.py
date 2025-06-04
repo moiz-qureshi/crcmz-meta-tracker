@@ -31,12 +31,12 @@ RANGES = {
 }
 
 TITLE_EMOJIS = {
-    ("Resurgence", "Long Range"): "🎯",
+    ("Resurgence", "Long Range"): "🏹",
     ("Resurgence", "Close Range"): "🔫",
-    ("Resurgence", "Sniper"): "🎯",
+    ("Resurgence", "Sniper"): "🔭",
     ("Verdansk", "Long Range"): "🏹",
-    ("Verdansk", "Close Range"): "🪖",
-    ("Verdansk", "Sniper"): "🏹"
+    ("Verdansk", "Close Range"): "🔫",
+    ("Verdansk", "Sniper"): "🔭"
 }
 
 EMBED_COLORS = {
